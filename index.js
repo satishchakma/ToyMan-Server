@@ -10,7 +10,7 @@ app.use(express.json());
 
 //console.log(process.env.DB_PASS);
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.tgn2qtt.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -40,6 +40,31 @@ async function run() {
     //see toys in api
     app.get("/toys", async (req, res) => {
       const cursor = toyCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    //toy categories
+    app.get("/category/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      console.log(typeof id);
+      // res.send("this is " + id);
+      const query = { category: id };
+      // const query = { _id: new ObjectId(id) };
+      const options = {
+        projection: {
+          photo: 1,
+          name: 1,
+          sellerName: 1,
+          email: 1,
+          category: 1,
+          price: 1,
+          toyRating: 1,
+          quantity: 1,
+          details: 1,
+        },
+      };
+      const cursor = toyCollection.find(query, options);
       const result = await cursor.toArray();
       res.send(result);
     });
