@@ -50,7 +50,7 @@ async function run() {
       console.log(typeof id);
       // res.send("this is " + id);
       const query = { category: id };
-      // const query = { _id: new ObjectId(id) };
+
       const options = {
         projection: {
           photo: 1,
@@ -66,6 +66,27 @@ async function run() {
       };
       const cursor = toyCollection.find(query, options);
       const result = await cursor.toArray();
+      res.send(result);
+    });
+    //single data details api creation
+    app.get("/singleDataDetails/:id", async (req, res) => {
+      //   console.log(req.params.id);
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      // const options = {
+      //   projection: {
+      //     photo: 1,
+      //     name: 1,
+      //     sellerName: 1,
+      //     email: 1,
+      //     category: 1,
+      //     price: 1,
+      //     toyRating: 1,
+      //     quantity: 1,
+      //     details: 1,
+      //   },
+      // };
+      const result = await toyCollection.findOne(query);
       res.send(result);
     });
 
