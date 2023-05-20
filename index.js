@@ -28,6 +28,7 @@ async function run() {
     await client.connect();
 
     const toyCollection = client.db("toyManDB").collection("toys");
+    // toyCollection.createIndex({ name: "text", details: "text" });
 
     // adding toys
     app.post("/toys", async (req, res) => {
@@ -69,8 +70,8 @@ async function run() {
       res.send(result);
     });
     //single data details api creation
-    app.get("/singleDataDetails/:id", async (req, res) => {
-      //   console.log(req.params.id);
+    app.get("/toy/:id", async (req, res) => {
+      console.log(typeof req.params.id);
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       // const options = {
@@ -87,6 +88,24 @@ async function run() {
       //   },
       // };
       const result = await toyCollection.findOne(query);
+      res.send(result);
+    });
+
+    //api for search items with toy names
+    const indexKeys = { name: 1, category: 1 }; // Replace field1 and field2 with your actual field names
+    const indexOptions = { name: "titleCategory" }; // Replace index_name with the desired index name
+    const result = await toyCollection.createIndex(indexKeys, indexOptions);
+
+    app.get("/toys/search/:key", async (req, res) => {
+      // await toyCollection.createIndex({ name: "text" });
+      console.log(req.params.key);
+      const myKey = req.params.key;
+
+      const result = await toyCollection
+        .find({
+          $or: [{ name: { $regex: myKey, $options: "i" } }],
+        })
+        .toArray();
       res.send(result);
     });
 
