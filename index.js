@@ -111,10 +111,12 @@ async function run() {
     });
     //email based data api
     app.get("/toys/:email", async (req, res) => {
-      let query = {};
-      if (req.query?.email) {
-        query = { email: req.query.email };
-      }
+      console.log(req.params.email);
+      const userMail = req.params.email;
+
+      const query = {
+        email: userMail,
+      };
       const result = await toyCollection.find(query).toArray();
       res.send(result);
     });
