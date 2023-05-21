@@ -109,6 +109,15 @@ async function run() {
         .toArray();
       res.send(result);
     });
+    //email based data api
+    app.get("/toys/:email", async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query.email };
+      }
+      const result = await toyCollection.find(query).toArray();
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
