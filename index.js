@@ -110,14 +110,19 @@ async function run() {
       res.send(result);
     });
     //email based data api
-    app.get("/toys/:email", async (req, res) => {
+    app.get("/toys/:email&:view", async (req, res) => {
       console.log(req.params.email);
       const userMail = req.params.email;
+      const view = req.params.view;
+      console.log(view);
 
       const query = {
         email: userMail,
       };
-      const result = await toyCollection.find(query).toArray();
+      const result = await toyCollection
+        .find(query)
+        .sort({ price: view })
+        .toArray();
       res.send(result);
     });
 
@@ -125,7 +130,25 @@ async function run() {
     app.delete("/toy/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await bookingCollection.deleteOne(query);
+      const result = await toyCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    //update/patch operations
+
+    app.put("/toy/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedToy = req.body;
+      console.log(updatedToy);
+      const updateDoc = {
+        $set: {
+          price: updatedToy.price,
+          quantity: updatedToy.quantity,
+          details: updatedToy.details,
+        },
+      };
+      const result = await toyCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
 
