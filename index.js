@@ -5,7 +5,15 @@ require("dotenv").config();
 const port = process.env.PORT || 5001;
 
 // middleware
-app.use(cors());
+// app.use(cors());
+const corsConfig = {
+  origin: "*",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+};
+app.use(cors(corsConfig));
+app.options("", cors(corsConfig));
+
 app.use(express.json());
 
 //console.log(process.env.DB_PASS);
@@ -25,10 +33,9 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    //await client.connect();
 
     const toyCollection = client.db("toyManDB").collection("toys");
-    // toyCollection.createIndex({ name: "text", details: "text" });
 
     // adding toys
     app.post("/toys", async (req, res) => {
@@ -41,7 +48,7 @@ async function run() {
     //see toys in api
     app.get("/toys", async (req, res) => {
       //limited to 20 products by default
-      const cursor = toyCollection.find().limit(20);
+      const cursor = toyCollection.find({}).limit(20);
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -93,9 +100,9 @@ async function run() {
     });
 
     //api for search items with toy names
-    const indexKeys = { name: 1, category: 1 }; // Replace field1 and field2 with your actual field names
-    const indexOptions = { name: "titleCategory" }; // Replace index_name with the desired index name
-    const result = await toyCollection.createIndex(indexKeys, indexOptions);
+    // const indexKeys = { name: 1, category: 1 }; // Replace field1 and field2 with your actual field names
+    // const indexOptions = { name: "titleCategory" }; // Replace index_name with the desired index name
+    // const result = await toyCollection.createIndex(indexKeys, indexOptions);
 
     app.get("/toys/search/:key", async (req, res) => {
       // await toyCollection.createIndex({ name: "text" });
@@ -153,10 +160,10 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // Ensures that the client will close when you finish/error
     //await client.close();
