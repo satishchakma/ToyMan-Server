@@ -40,7 +40,8 @@ async function run() {
 
     //see toys in api
     app.get("/toys", async (req, res) => {
-      const cursor = toyCollection.find();
+      //limited to 20 products by default
+      const cursor = toyCollection.find().limit(20);
       const result = await cursor.toArray();
       res.send(result);
     });
